@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotizador RedSalud · Seguros de Salud</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eaeff1; --surface:#ffffff; --ink:#1a2a32; --muted:#5f7480;
+    --slate:#3d5563; --slate-d:#2c3f4a;
+    --teal:#10a495; --teal-d:#0b7c70; --tint:#e4f4f2; --tint-2:#f3faf9;
+    --line:#dbe4e7; --danger:#c0492e;
+    --shadow:0 1px 2px rgba(28,45,54,.06),0 10px 30px rgba(28,45,54,.07);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;font-size:15px;line-height:1.5;
+    background-image:radial-gradient(1200px 400px at 90% -5%,rgba(16,164,149,.10),transparent 60%);}
+  .wrap{max-width:1120px;margin:0 auto;padding:28px 20px 60px}
+  h1,h2,h3{font-family:"Manrope",system-ui,sans-serif}
+
+  header.top{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;margin-bottom:22px}
+  .brand{display:flex;align-items:center;gap:13px}
+  .mark{width:46px;height:46px;border-radius:13px;background:linear-gradient(150deg,var(--teal),var(--teal-d));
+    display:grid;place-items:center;box-shadow:var(--shadow);flex:none}
+  .mark svg{width:26px;height:26px}
+  .brand h1{font-size:22px;font-weight:800;margin:0;letter-spacing:-.02em}
+  .brand p{margin:2px 0 0;color:var(--muted);font-size:13px;font-weight:500}
+  .uf-box{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:10px 14px;box-shadow:var(--shadow)}
+  .uf-box label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+  .uf-box .in{display:flex;align-items:center;gap:5px}
+  .uf-box .in span{font-weight:700;color:var(--slate)}
+  .uf-box input{width:104px;border:1px solid var(--line);border-radius:9px;padding:7px 9px;
+    font-family:"Manrope";font-weight:700;font-size:15px;color:var(--ink);text-align:right}
+  .uf-box small{display:block;color:var(--muted);font-size:10.5px;margin-top:2px}
+
+  .grid{display:grid;grid-template-columns:1fr 400px;gap:22px;align-items:start}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .card .hd{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .card .hd .step{width:24px;height:24px;border-radius:7px;background:var(--tint);color:var(--teal-d);
+    font-family:"Manrope";font-weight:800;font-size:13px;display:grid;place-items:center;flex:none}
+  .card .hd h2{font-size:15px;margin:0;font-weight:700}
+  .card .bd{padding:20px}
+
+  label.fld{display:block;font-size:12px;font-weight:600;color:var(--slate);margin:0 0 7px}
+  select,input[type=number]{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px 13px;
+    font-family:"Inter";font-size:15px;color:var(--ink);background:#fff;appearance:none}
+  select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%235f7480' stroke-width='2'><path d='M6 8l4 4 4-4'/></svg>");
+    background-repeat:no-repeat;background-position:right 12px center;padding-right:38px}
+  select:focus,input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(16,164,149,.15)}
+
+  /* barra de folleto */
+  .doc{margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+    background:var(--tint-2);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+  .doc .fname{flex:1;min-width:160px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px}
+  .doc .fname svg{width:16px;height:16px;flex:none;color:var(--danger)}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--slate);font-family:"Inter";font-weight:600;
+    font-size:12.5px;padding:8px 13px;border-radius:9px;cursor:pointer;text-decoration:none;
+    display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .btn:hover{border-color:var(--teal);color:var(--teal-d)}
+  .btn.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+  .btn.pri:hover{background:var(--teal-d);border-color:var(--teal-d);color:#fff}
+
+  .seg{display:inline-flex;background:var(--tint-2);border:1px solid var(--line);border-radius:11px;padding:3px;gap:3px}
+  .seg button{border:none;background:none;font-family:"Inter";font-weight:600;font-size:13px;color:var(--muted);
+    padding:8px 14px;border-radius:8px;cursor:pointer}
+  .seg button.on{background:#fff;color:var(--teal-d);box-shadow:0 1px 3px rgba(28,45,54,.12)}
+
+  .planinfo{margin-top:14px;background:var(--tint-2);border:1px solid var(--line);border-radius:12px;
+    padding:12px 14px;font-size:12.5px;color:var(--muted);line-height:1.5}
+  .planinfo b{color:var(--slate)}
+
+  .people{display:flex;flex-direction:column;gap:11px}
+  .prow{display:grid;grid-template-columns:1fr 40px;gap:10px;align-items:end}
+  .prow .rel{font-size:11px;font-weight:700;color:var(--teal-d);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  .prow label{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;display:block}
+  .del{height:45px;border:1px solid var(--line);background:#fff;border-radius:11px;color:var(--muted);
+    cursor:pointer;font-size:18px;display:grid;place-items:center}
+  .del:hover{border-color:var(--danger);color:var(--danger)}
+  .del:disabled{opacity:.35;cursor:not-allowed}
+  .addbtn{margin-top:14px;width:100%;border:1.5px dashed var(--teal);background:var(--tint-2);color:var(--teal-d);
+    font-family:"Manrope";font-weight:700;font-size:14px;padding:12px;border-radius:12px;cursor:pointer}
+  .addbtn:hover{background:var(--tint)}
+
+  .summary{position:sticky;top:20px}
+  .sum-head{background:linear-gradient(150deg,var(--slate),var(--slate-d));color:#fff;padding:18px 20px}
+  .sum-head .plan{font-family:"Manrope";font-weight:800;font-size:17px}
+  .sum-head .sub{font-size:12px;opacity:.8;margin-top:3px}
+  .lines{padding:8px 20px;max-height:270px;overflow:auto}
+  .line{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .line:last-child{border-bottom:none}
+  .line .who{font-weight:600;font-size:13.5px}
+  .chip{display:inline-block;margin-top:3px;font-size:11px;font-weight:600;color:var(--teal-d);
+    background:var(--tint);border-radius:6px;padding:2px 7px}
+  .chip.out{color:var(--danger);background:#fbe9e4}
+  .line .amt{text-align:right;flex:none}
+  .line .amt .uf{font-family:"Manrope";font-weight:700;font-size:14px}
+  .line .amt .clp{font-size:11.5px;color:var(--muted)}
+  .total{padding:18px 20px;background:var(--tint-2);border-top:1px solid var(--line)}
+  .total .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+  .total .big{font-family:"Manrope";font-weight:800;font-size:34px;color:var(--teal-d);line-height:1;margin-top:4px}
+  .total .clp{font-family:"Manrope";font-weight:700;font-size:18px;margin-top:6px}
+  .total .per{font-size:12px;color:var(--muted);margin-top:8px}
+  .warn{margin:0 20px 16px;background:#fbe9e4;border:1px solid #f0c4b8;color:#8f3421;
+    border-radius:11px;padding:10px 12px;font-size:12px;display:none}
+
+  /* VISOR PDF */
+  .modal{position:fixed;inset:0;background:rgba(26,42,50,.72);backdrop-filter:blur(3px);
+    display:none;z-index:50;padding:20px}
+  .modal.on{display:flex;align-items:center;justify-content:center}
+  .viewer{background:#fff;border-radius:16px;width:min(900px,100%);height:min(88vh,100%);
+    display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.3)}
+  .vhd{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line);flex:none}
+  .vhd .t{flex:1;min-width:0;font-family:"Manrope";font-weight:700;font-size:14px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pager{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);font-weight:600}
+  .pager button{width:30px;height:30px;border:1px solid var(--line);background:#fff;border-radius:8px;
+    cursor:pointer;color:var(--slate);display:grid;place-items:center;font-size:15px}
+  .pager button:disabled{opacity:.35;cursor:not-allowed}
+  .vclose{width:32px;height:32px;border:none;background:var(--tint-2);border-radius:9px;cursor:pointer;
+    font-size:18px;color:var(--slate);display:grid;place-items:center}
+  .vbody{flex:1;overflow:auto;background:#e7edef;padding:16px;display:flex;flex-direction:column;
+    align-items:center;gap:14px}
+  .vbody canvas{max-width:100%;height:auto;box-shadow:0 4px 16px rgba(28,45,54,.18);border-radius:4px;background:#fff}
+  .vstate{color:var(--muted);font-size:13px;padding:40px 20px;text-align:center;line-height:1.7}
+  .vstate a{color:var(--teal-d);font-weight:600}
+  .spin{width:26px;height:26px;border:3px solid var(--line);border-top-color:var(--teal);
+    border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 12px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.spin{animation:none}}
+
+  footer{margin-top:24px;color:var(--muted);font-size:11.5px;line-height:1.6;text-align:center}
+  footer b{color:var(--slate)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21s-7-4.6-9.3-9C1.2 9 2.6 5 6.2 5c2 0 3.2 1.2 3.8 2.3C10.6 6.2 11.8 5 13.8 5c3.6 0 5 4 3.5 7-2.3 4.4-9.3 9-9.3 9z" fill="rgba(255,255,255,.14)"/>
+          <path d="M4 12h3l1.5-3 3 6 1.5-3H20"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Cotizador RedSalud</h1>
+        <p>Prima mensual por asegurado según edad · en UF y pesos</p>
+      </div>
+    </div>
+    <div class="uf-box">
+      <label>Valor UF</label>
+      <div class="in"><span>$</span><input id="uf" type="number" step="0.01" value="40825.75"></div>
+      <small>al 2 jul 2026 · editable</small>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div class="card">
+        <div class="hd"><div class="step">1</div><h2>Elige el seguro</h2></div>
+        <div class="bd">
+          <label class="fld" for="plan">Producto</label>
+          <select id="plan"></select>
+
+          <!-- Folleto -->
+          <div class="doc" id="doc">
+            <div class="fname">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>
+              </svg>
+              <span id="docName">Folleto del seguro</span>
+            </div>
+            <button class="btn pri" id="btnView">Ver folleto</button>
+            <a class="btn" id="btnDl" download>Descargar</a>
+          </div>
+
+          <div id="deducibleWrap" style="margin-top:16px;display:none">
+            <label class="fld">Deducible de la extensión catastrófica</label>
+            <div class="seg" id="dedSeg">
+              <button data-ded="UF 50" class="on">Deducible UF 50</button>
+              <button data-ded="UF 30">Deducible UF 30</button>
+            </div>
+          </div>
+
+          <div id="dentalWrap" style="margin-top:16px;display:none">
+            <label class="fld" for="dentalPlan">Plan dental (capital muerte accidental)</label>
+            <select id="dentalPlan"></select>
+          </div>
+
+          <div class="planinfo" id="planInfo"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><div class="step">2</div><h2>¿Quiénes se aseguran?</h2></div>
+        <div class="bd">
+          <div class="people" id="people"></div>
+          <button class="addbtn" id="add">＋ Agregar asegurado</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card summary">
+      <div class="sum-head">
+        <div class="plan" id="sumPlan">—</div>
+        <div class="sub" id="sumSub"></div>
+      </div>
+      <div class="warn" id="warn"></div>
+      <div class="lines" id="lines"></div>
+      <div class="total">
+        <div class="lbl">Prima mensual total</div>
+        <div class="big" id="totUF">0,00 UF</div>
+        <div class="clp" id="totCLP">$0</div>
+        <div class="per" id="perPerson"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Valores brutos (IVA incluido) tomados de los folletos oficiales RedSalud. La prima real puede variar según condiciones de la póliza, carencias, deducibles y vigencia tarifaria.<br>
+    <b>No constituye una cotización oficial.</b>
+  </footer>
+</div>
+
+<!-- VISOR -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Visor de folleto">
+  <div class="viewer">
+    <div class="vhd">
+      <div class="t" id="vTitle">Folleto</div>
+      <div class="pager" id="pager" style="display:none">
+        <button id="pPrev" aria-label="Página anterior">‹</button>
+        <span id="pInfo">1 / 1</span>
+        <button id="pNext" aria-label="Página siguiente">›</button>
+      </div>
+      <button class="vclose" id="vClose" aria-label="Cerrar">×</button>
+    </div>
+    <div class="vbody" id="vBody"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+/* ============================================================
+   REPOSITORIO DE FOLLETOS
+   Si renombras un PDF en GitHub, cambia solo el valor aquí.
+   ============================================================ */
+const REPO = {
+  user:"diegopractica2010-design", name:"Seguros", branch:"main",
+  raw(f){  return `https://raw.githubusercontent.com/${this.user}/${this.name}/${this.branch}/${encodeURIComponent(f)}`; }
+};
+const PDFS = {
+  f50:    "soyredsalud-complementario-full-50---v4.pdf",
+  f70:    "soyredsalud-complementario-full-70---v4.pdf",
+  f2550:  "soyredsalud-complementario-full-25-50---v4.pdf",
+  addon:  "folleto-complementario-redsalud-addon.pdf",
+  addone: "folleto-complementario-redsalud-addon-con-extension-catastrofica-1.pdf",
+  cat30:  "folleto-catastrofico-30uf-jul-25.pdf",
+  cat50:  "folleto-catastrofico-50uf-jul25.pdf",
+  ext50:  "folleto-catastrofico-50uf-jul25.pdf",
+  ext30:  "folleto-catastrofico-30uf-jul-25.pdf",
+  f50e:   "soyredsalud-complementario-full-50-extensión-catastrófica-50-uf---v4.pdf",
+  f70e:   "soyredsalud-complementario-full-70-extensión-catastrófica-50-uf---v4.pdf",
+  f2550e: "soyredsalud-complementario-full-25-50-extensión-catastrófica-30-uf-y-50-uf---v4.pdf",
+  onco:   "folleto-redsalud-oncologico.pdf",
+  am:     "folleto-ambulatorio-adulto-mayor-febrero26.pdf",
+  exam:   "seguro-redsalud-exámenes-50---v3.pdf",
+  examc:  "seguro-redsalud-exámenes-y-consultas-50---v3 (1).pdf",
+  dental: "folleto-seguro-redsalud-dental_ nuevo.pdf",
+};
+
+/* ===== TABLAS DE PRIMAS (UF) ===== */
+const STD12=["0-20","21-30","31-40","41-50","51-60","61-65","66-70","71-75","76-80","81-85","86-90","Más de 90"];
+const ONCO9=["0-20","21-30","31-40","41-50","51-60","61-70","71-80","81-90","Más de 90"];
+const AM7=["65-69","70-74","75-79","80-84","85-89","90-94","95-99"];
+const D={
+  CAT30:[0.26,0.38,0.53,0.62,1.07,1.45,1.97,2.05,2.27,2.35,3.02,3.62],
+  CAT50:[0.22,0.32,0.44,0.51,0.88,1.19,1.62,1.68,1.86,1.92,2.48,2.97],
+  ADDON:[0.12,0.29,0.37,0.41,0.46,0.49,0.59,0.62,0.77,0.83,1.08,1.28],
+  ADDONE:[0.21,0.43,0.57,0.65,0.87,1.05,1.35,1.41,1.65,1.74,2.26,2.68],
+  F2550:[0.36,0.50,0.57,0.61,0.65,0.68,0.76,0.78,0.90,0.95,1.14,1.29],
+  F50:[0.50,0.68,0.76,0.81,0.85,0.89,0.99,1.02,1.17,1.24,1.50,1.70],
+  F70:[0.65,0.87,0.96,1.02,1.08,1.12,1.24,1.28,1.48,1.56,1.89,2.15],
+  EXT50:[0.46,0.64,0.77,0.84,1.06,1.24,1.52,1.57,1.78,1.86,2.32,2.70],
+  EXT30:[0.50,0.71,0.87,0.96,1.26,1.51,1.90,1.97,2.22,2.31,2.90,3.40],
+  F50EI:[0.60,0.83,0.97,1.06,1.28,1.47,1.78,1.84,2.08,2.18,2.71,3.15],
+  F50EII:[0.65,0.90,1.07,1.18,1.48,1.75,2.17,2.25,2.53,2.65,3.32,3.88],
+  F70EI:[0.75,1.02,1.17,1.27,1.51,1.70,2.03,2.10,2.39,2.50,3.10,3.60],
+  F70EII:[0.80,1.09,1.27,1.39,1.71,1.98,2.42,2.51,2.84,2.97,3.71,4.33],
+  F2550EI:[0.48,0.67,0.81,0.88,1.10,1.29,1.58,1.63,1.84,1.92,2.39,2.78],
+  F2550EII:[0.53,0.74,0.91,1.00,1.30,1.57,1.97,2.04,2.29,2.39,3.00,3.51],
+  ONCO:[0.16,0.24,0.34,0.41,0.72,1.24,1.43,1.65,2.46],
+  AM:[0.61,0.80,0.97,1.12,1.26,1.54,1.77],
+};
+const idx12=a=>a<=20?0:a<=30?1:a<=40?2:a<=50?3:a<=60?4:a<=65?5:a<=70?6:a<=75?7:a<=80?8:a<=85?9:a<=90?10:11;
+const idxOnco=a=>a<=20?0:a<=30?1:a<=40?2:a<=50?3:a<=60?4:a<=70?5:a<=80?6:a<=90?7:8;
+const idxAM=a=>(a<65||a>99)?-1:Math.min(6,Math.floor((a-65)/5));
+
+const PLANS=[
+ {g:"Complementario",id:"f50",n:"Complementario Full 50%",kind:"std12",v:D.F50},
+ {g:"Complementario",id:"f70",n:"Complementario Full 70%",kind:"std12",v:D.F70},
+ {g:"Complementario",id:"f2550",n:"Complementario Full 25/50%",kind:"std12",v:D.F2550},
+ {g:"Complementario",id:"addon",n:"Complementario Add-On",kind:"std12",v:D.ADDON},
+ {g:"Complementario",id:"addone",n:"Add-On + Extensión Catastrófica",kind:"std12",v:D.ADDONE},
+ {g:"Catastrófico",id:"cat30",n:"Catastrófico 30 UF",kind:"std12",v:D.CAT30},
+ {g:"Catastrófico",id:"cat50",n:"Catastrófico 50 UF",kind:"std12",v:D.CAT50},
+ {g:"Extensión Catastrófica (sola)",id:"ext50",n:"Extensión Cat. · Deducible UF 50",kind:"std12",v:D.EXT50},
+ {g:"Extensión Catastrófica (sola)",id:"ext30",n:"Extensión Cat. · Deducible UF 30",kind:"std12",v:D.EXT30},
+ {g:"Full + Extensión (paquete)",id:"f50e",n:"Full 50% + Ext. Catastrófica 50 UF",kind:"ded",ded:{"UF 50":D.F50EI,"UF 30":D.F50EII}},
+ {g:"Full + Extensión (paquete)",id:"f70e",n:"Full 70% + Ext. Catastrófica 50 UF",kind:"ded",ded:{"UF 50":D.F70EI,"UF 30":D.F70EII}},
+ {g:"Full + Extensión (paquete)",id:"f2550e",n:"Full 25/50% + Ext. Cat. 30 y 50 UF",kind:"ded",ded:{"UF 50":D.F2550EI,"UF 30":D.F2550EII}},
+ {g:"Otros por edad",id:"onco",n:"Oncológico",kind:"onco",v:D.ONCO},
+ {g:"Otros por edad",id:"am",n:"Ambulatorio Adulto Mayor (65+)",kind:"am",v:D.AM},
+ {g:"Prima plana",id:"exam",n:"Exámenes 50%",kind:"flat",v:0.28},
+ {g:"Prima plana",id:"examc",n:"Exámenes y Consultas 50%",kind:"flat",v:0.39},
+ {g:"Dental",id:"dental",n:"Dental (por plan)",kind:"dental",
+  plans:[{n:"Plan 1 · MA UF 50",v:0.28},{n:"Plan 2 · MA UF 75",v:0.56},{n:"Plan 3 · MA UF 100",v:0.84},{n:"Plan 4 · MA UF 125",v:1.12},{n:"Plan 5 · MA UF 150",v:1.39}]},
+];
+const INFO={
+ std12:"Prima <b>por asegurado</b>, según tramo de edad (0 a +90).",
+ ded:"Prima total <b>por asegurado</b> del paquete (complementario + extensión catastrófica). Menor deducible = prima mayor.",
+ onco:"Prima <b>por asegurado</b> en tramos de 10 años.",
+ am:"Prima bruta <b>por asegurado</b>. Solo cubre personas de <b>65 a 99 años</b>.",
+ flat:"Prima única <b>por asegurado</b>, no varía con la edad.",
+ dental:"Prima <b>por titular</b> según el plan de capital elegido. No varía por edad.",
+};
+const NOTE_EXT = "El folleto vinculado es el del seguro catastrófico del deducible correspondiente.";
+
+let state={planId:"f50",ded:"UF 50",dentalPlan:0,people:[{age:35},{age:32}]};
+const $=s=>document.querySelector(s);
+const fmtUF=v=>v.toLocaleString("es-CL",{minimumFractionDigits:2,maximumFractionDigits:2})+" UF";
+const fmtCLP=v=>"$"+Math.round(v).toLocaleString("es-CL");
+
+function buildPlanSelect(){
+  const sel=$("#plan"),g={};
+  PLANS.forEach(p=>{(g[p.g]=g[p.g]||[]).push(p)});
+  sel.innerHTML="";
+  Object.entries(g).forEach(([gn,arr])=>{
+    const og=document.createElement("optgroup"); og.label=gn;
+    arr.forEach(p=>{const o=document.createElement("option");o.value=p.id;o.textContent=p.n;og.appendChild(o)});
+    sel.appendChild(og);
+  });
+  sel.value=state.planId;
+}
+function buildDentalSelect(){
+  const p=PLANS.find(x=>x.id==="dental"),sel=$("#dentalPlan"); sel.innerHTML="";
+  p.plans.forEach((pl,i)=>{const o=document.createElement("option");o.value=i;o.textContent=pl.n+" — "+fmtUF(pl.v);sel.appendChild(o)});
+  sel.value=state.dentalPlan;
+}
+function renderPeople(){
+  const w=$("#people"); w.innerHTML="";
+  state.people.forEach((p,i)=>{
+    const r=document.createElement("div"); r.className="prow";
+    r.innerHTML=`<div>
+        <div class="rel">${i===0?"Titular":"Dependiente "+i}</div>
+        <label>Edad</label>
+        <input type="number" min="0" max="120" value="${p.age}" data-i="${i}">
+      </div>
+      <button class="del" data-del="${i}" ${state.people.length===1?"disabled":""} aria-label="Quitar">×</button>`;
+    w.appendChild(r);
+  });
+  w.querySelectorAll("input").forEach(i=>i.addEventListener("input",e=>{
+    const v=e.target.value; state.people[+e.target.dataset.i].age = v===""?"":Math.max(0,parseInt(v)||0); calc();
+  }));
+  w.querySelectorAll(".del").forEach(b=>b.addEventListener("click",e=>{
+    state.people.splice(+e.currentTarget.dataset.del,1); renderPeople(); calc();
+  }));
+}
+function premiumFor(plan,age){
+  if(plan.kind==="flat")   return {uf:plan.v,tramo:"Prima única"};
+  if(plan.kind==="dental") return {uf:plan.plans[state.dentalPlan].v,tramo:plan.plans[state.dentalPlan].n};
+  if(plan.kind==="onco"){const k=idxOnco(age);return {uf:plan.v[k],tramo:ONCO9[k]+" años"};}
+  if(plan.kind==="am"){const k=idxAM(age);return k<0?{uf:null,tramo:"Fuera de cobertura"}:{uf:plan.v[k],tramo:AM7[k]+" años"};}
+  const arr=plan.kind==="ded"?plan.ded[state.ded]:plan.v, k=idx12(age);
+  return {uf:arr[k],tramo:STD12[k]+" años"};
+}
+function calc(){
+  const plan=PLANS.find(p=>p.id===state.planId);
+  const ufv=parseFloat($("#uf").value)||0;
+  $("#deducibleWrap").style.display = plan.kind==="ded"?"block":"none";
+  $("#dentalWrap").style.display    = plan.kind==="dental"?"block":"none";
+  $("#planInfo").innerHTML = INFO[plan.kind] + ((plan.id==="ext30"||plan.id==="ext50")?" <br><i>"+NOTE_EXT+"</i>":"");
+
+  // folleto
+  const file = PDFS[plan.id];
+  $("#docName").textContent = file;
+  $("#btnDl").href  = REPO.raw(file);
+  $("#btnDl").setAttribute("download", file);
+
+  $("#sumPlan").textContent = plan.n;
+  $("#sumSub").textContent  = plan.kind==="ded" ? "Deducible "+state.ded
+      : plan.kind==="dental" ? plan.plans[state.dentalPlan].n : "Prima bruta · IVA incluido";
+
+  const lines=$("#lines"); lines.innerHTML=""; let tot=0,cov=0,out=false;
+  const perPolicy = plan.kind==="dental";
+  const list = perPolicy ? [state.people[0]] : state.people;
+
+  list.forEach((per,i)=>{
+    const age = per.age===""?null:per.age;
+    const el=document.createElement("div"); el.className="line";
+    const who = perPolicy ? "Póliza (titular)" : (i===0?"Titular":"Dependiente "+i);
+    if(age===null){
+      el.innerHTML=`<div><div class="who">${who}</div><span class="chip out">Ingresa la edad</span></div><div class="amt"><div class="uf">—</div></div>`;
+      lines.appendChild(el); return;
+    }
+    const r=premiumFor(plan,age);
+    if(r.uf===null){
+      out=true;
+      el.innerHTML=`<div><div class="who">${who} · ${age} años</div><span class="chip out">${r.tramo}</span></div><div class="amt"><div class="uf">—</div></div>`;
+    }else{
+      tot+=r.uf; cov++;
+      const lab = perPolicy ? r.tramo : `${age} años · ${r.tramo}`;
+      el.innerHTML=`<div><div class="who">${who}</div><span class="chip">${lab}</span></div>
+        <div class="amt"><div class="uf">${fmtUF(r.uf)}</div><div class="clp">${fmtCLP(r.uf*ufv)}</div></div>`;
+    }
+    lines.appendChild(el);
+  });
+
+  $("#totUF").textContent=fmtUF(tot);
+  $("#totCLP").textContent=fmtCLP(tot*ufv);
+  $("#perPerson").textContent = cov>1 ? `${cov} asegurados · promedio ${fmtCLP(tot*ufv/cov)} c/u` : (cov===1?"1 asegurado":"");
+  const w=$("#warn");
+  if(out){ w.style.display="block";
+    w.innerHTML = plan.kind==="am"
+      ? "⚠ El Ambulatorio Adulto Mayor solo cubre de 65 a 99 años. Los demás quedan fuera del total."
+      : "⚠ Hay asegurados fuera de cobertura por edad."; }
+  else w.style.display="none";
+}
+
+/* ===== VISOR PDF ===== */
+let task=null, doc=null, page=1;
+const vBody=$("#vBody");
+async function openViewer(){
+  const plan=PLANS.find(p=>p.id===state.planId), file=PDFS[plan.id];
+  $("#vTitle").textContent = plan.n;
+  $("#modal").classList.add("on");
+  $("#pager").style.display="none";
+  vBody.innerHTML=`<div class="vstate"><div class="spin"></div>Cargando folleto…</div>`;
+  try{
+    if(task) task.destroy();
+    task = pdfjsLib.getDocument(REPO.raw(file));
+    doc  = await task.promise;
+    page = 1;
+    $("#pager").style.display="flex";
+    await renderPage();
+  }catch(e){
+    vBody.innerHTML=`<div class="vstate">
+      No se pudo mostrar el folleto en el visor.<br>
+      <a href="${REPO.raw(file)}" download="${file}">Descargar el folleto</a>
+    </div>`;
+  }
+}
+async function renderPage(){
+  const p = await doc.getPage(page);
+  const scale = Math.min(1.6, (vBody.clientWidth-32)/p.getViewport({scale:1}).width);
+  const vp = p.getViewport({scale:Math.max(scale,.6)});
+  const c=document.createElement("canvas"), ctx=c.getContext("2d");
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  c.width=vp.width*dpr; c.height=vp.height*dpr;
+  c.style.width=vp.width+"px"; c.style.height=vp.height+"px";
+  ctx.scale(dpr,dpr);
+  await p.render({canvasContext:ctx,viewport:vp}).promise;
+  vBody.innerHTML=""; vBody.appendChild(c); vBody.scrollTop=0;
+  $("#pInfo").textContent=`${page} / ${doc.numPages}`;
+  $("#pPrev").disabled = page<=1;
+  $("#pNext").disabled = page>=doc.numPages;
+}
+function closeViewer(){ $("#modal").classList.remove("on"); if(task){task.destroy();task=null;} doc=null; }
+
+$("#btnView").addEventListener("click",openViewer);
+$("#vClose").addEventListener("click",closeViewer);
+$("#modal").addEventListener("click",e=>{ if(e.target===$("#modal")) closeViewer(); });
+document.addEventListener("keydown",e=>{
+  if(!$("#modal").classList.contains("on")) return;
+  if(e.key==="Escape") closeViewer();
+  if(e.key==="ArrowRight" && doc && page<doc.numPages){page++;renderPage();}
+  if(e.key==="ArrowLeft"  && doc && page>1){page--;renderPage();}
+});
+$("#pPrev").addEventListener("click",()=>{ if(page>1){page--;renderPage();} });
+$("#pNext").addEventListener("click",()=>{ if(doc&&page<doc.numPages){page++;renderPage();} });
+
+$("#plan").addEventListener("change",e=>{state.planId=e.target.value;calc();});
+$("#dentalPlan").addEventListener("change",e=>{state.dentalPlan=+e.target.value;calc();});
+$("#uf").addEventListener("input",calc);
+$("#dedSeg").addEventListener("click",e=>{
+  if(!e.target.dataset.ded)return;
+  state.ded=e.target.dataset.ded;
+  [...$("#dedSeg").children].forEach(b=>b.classList.toggle("on",b===e.target));
+  calc();
+});
+$("#add").addEventListener("click",()=>{ if(state.people.length<10){state.people.push({age:30});renderPeople();calc();} });
+
+buildPlanSelect(); buildDentalSelect(); renderPeople(); calc();
+</script>
+</body>
+</html>
